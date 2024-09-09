@@ -6,8 +6,8 @@ from os.path import join, basename, dirname, splitext
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
-commend = 'ffmpeg -loglevel quiet -y -i {} -f wav -ar 16000 {}'
-
+aud_commend = 'ffmpeg -loglevel quiet -y -i {} -f wav -ar 16000 {}'
+separate_commend = 'spleeter separate -p spleeter:2stems {} -o {}'
 
 def get_filelists(data_root, file_path):
     filelist = []
@@ -25,7 +25,8 @@ def process_audio_file(vfile):
     save_dir = dirname(save_audio_path)
     if not os.path.exists(save_dir): os.makedirs(save_dir, exist_ok=True)
     
-    subprocess.call(commend.format(vfile, save_audio_path), shell=True)
+    subprocess.call(aud_commend.format(vfile, save_audio_path), shell=True)
+    subprocess.call(separate_commend.format(save_audio_path, save_audio_path[:-4] + '_vocal' + save_audio_path[-4:]), shell=True)
 
 
 def mp_handler_audio(vfile):
